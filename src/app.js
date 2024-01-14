@@ -37,6 +37,10 @@ function extractYearMonthDay(date) {
     });
 }
 
+function setDatePickerToToday() {
+    datePickerElement.value = new Date().toISOString().substring(0, 10);
+}
+
 async function saveItem() {
     if (itemInputElement.value == "" || datePickerElement.value == "") {
         return;
@@ -56,7 +60,7 @@ async function saveItem() {
     sortItemsListByDate();
     renderItems();
     itemInputElement.value = "";
-    datePickerElement.value = "";
+    setDatePickerToToday();
 }
 
 function deleteItem(idToDelete) {
@@ -102,17 +106,13 @@ function clearItemInput() {
     itemInputElement.value = "";
 }
 
-function clearDatePicker() {
-    datePickerElement.value = "";
-}
-
 function initApp() {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     saveButtonElement.addEventListener("click", saveItem);
     clearButtonElement.addEventListener("click", function() {
         clearItemInput();
-        clearDatePicker();
+        setDatePickerToToday();
         clearButtonElement.style.display = "none";
     });
     signInButtonElement.addEventListener("click", function() {
@@ -141,6 +141,7 @@ function initApp() {
             });
             sortItemsListByDate();
             renderItems();
+            setDatePickerToToday();
         } else {
             uid = null;
 
