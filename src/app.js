@@ -45,6 +45,10 @@ const saveButtonElement = document.getElementById("saveButton");
 const signOutButtonElement = document.getElementById('signOutButton');
 const firebaseAuthUiElement = document.getElementById("firebaseui-auth-container");
 
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // Functions
 async function saveItem() {
     if (itemInputElement.value == "" || datePickerElement.value == "") {
@@ -95,9 +99,6 @@ function populateNewItem(item) {
 }
 
 function initApp() {
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
     const auth = getAuth();
     const firebaseUi = new firebaseui.auth.AuthUI(auth);
 
