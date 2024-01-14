@@ -14,7 +14,7 @@ li {
 }
 
 li:hover {
-    color: blue;
+    color: red;
     cursor: pointer;
 }
 

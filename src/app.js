@@ -69,9 +69,6 @@ async function saveItem() {
         date: date,
     };
 
-    console.log("datePickerElement.value: " + datePickerElement.value);
-    console.log("item.date: " + item.date);
-
     const docReference = await addDoc(collection(db, uid), item);
     item.id = docReference.id;
     itemsList.push(item);
@@ -94,8 +91,6 @@ function renderItems() {
     for (let i = 0; i < itemsList.length; i++) {
         const item = itemsList[i];
         const itemElement = document.createElement("li");
-        // console.log("new Date(): " + new Date());
-        // console.log("item.date: " + item.date);
         
         var currentDate = new Date();
         const year = currentDate.getFullYear();
