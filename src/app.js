@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { collection, addDoc, getFirestore, getDocs, deleteDoc, doc  } from "firebase/firestore";
-import { GoogleAuthProvider, getAuth } from "firebase/auth";
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { differenceInDays } from "date-fns";
 
 // Fields
@@ -14,27 +14,6 @@ const firebaseConfig = {
     messagingSenderId: "592625644130",
     appId: "1:592625644130:web:b83b4fdb4b1bf36ebb173b"
 };
-const firebaseUiConfig = {
-    signInSuccessUrl: 'https://alexsyeo.github.io/dayssince/',
-    signInOptions: [
-        // Leave the lines as is for the providers you want to offer your users.
-        GoogleAuthProvider.PROVIDER_ID,
-    //   firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-    //   firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-    //   firebase.auth.GithubAuthProvider.PROVIDER_ID,
-    //   firebase.auth.EmailAuthProvider.PROVIDER_ID,
-    //   firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-    //   firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
-    ],
-    // tosUrl and privacyPolicyUrl accept either url string or a callback
-    // function.
-    // Terms of service url/callback.
-    // tosUrl: '<your-tos-url>',
-    // Privacy policy url/callback.
-    // privacyPolicyUrl: function() {
-    //   window.location.assign('<your-privacy-policy-url>');
-    // }
-};
 
 // Document elements
 const mainElement = document.getElementById("main");
@@ -42,8 +21,10 @@ const itemsListElement = document.getElementById("itemsList");
 const itemInputElement = document.getElementById("itemInput");
 const datePickerElement = document.getElementById("datePicker");
 const saveButtonElement = document.getElementById("saveButton");
+const clearButtonElement = document.getElementById("clearButton");
 const signOutButtonElement = document.getElementById('signOutButton');
-const firebaseAuthUiElement = document.getElementById("firebaseui-auth-container");
+const signInButtonElement = document.getElementById('signInButton');
+const signInContainerElement = document.getElementById('signInContainer');
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -114,14 +95,30 @@ function renderItems() {
 function populateNewItem(item) {
     itemInputElement.value = item.title;
     datePickerElement.value = item.date.toISOString().split('T')[0];
+    clearButtonElement.style.display = "block";
+}
+
+function clearItemInput() {
+    itemInputElement.value = "";
+}
+
+function clearDatePicker() {
+    datePickerElement.value = "";
 }
 
 function initApp() {
     const auth = getAuth();
-    const firebaseUi = new firebaseui.auth.AuthUI(auth);
-
+    const provider = new GoogleAuthProvider();
     saveButtonElement.addEventListener("click", saveItem);
-    signOutButtonElement.addEventListener('click', function() {
+    clearButtonElement.addEventListener("click", function() {
+        clearItemInput();
+        clearDatePicker();
+        clearButtonElement.style.display = "none";
+    });
+    signInButtonElement.addEventListener("click", function() {
+        signInWithPopup(auth, provider);
+    });
+    signOutButtonElement.addEventListener("click", function() {
         auth.signOut();
     });
     auth.onAuthStateChanged(async function(user) {
@@ -129,7 +126,10 @@ function initApp() {
             uid = user.uid;
             
             mainElement.style.display = "block";
-            firebaseAuthUiElement.style.display = "none";
+            signInContainerElement.style.display = "none";
+
+            // Sanity check to avoid duplicates.
+            itemsList = [];
 
             // Fetch data from Firestore
             const querySnapshot = await getDocs(collection(db, uid));
@@ -144,14 +144,8 @@ function initApp() {
         } else {
             uid = null;
 
-            firebaseAuthUiElement.style.display = "block";
+            signInContainerElement.style.display = "block";
             mainElement.style.display = "none";
-
-            // The start method will wait until the DOM is loaded.
-            firebaseUi.start('#firebaseui-auth-container', firebaseUiConfig);
-            if (firebaseUi.isPendingRedirect()) {
-                firebaseUi.start('#firebaseui-auth-container', firebaseUiConfig);
-            }
         }
     }, function(error) {
         console.log(error);

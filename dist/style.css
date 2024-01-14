@@ -18,6 +18,10 @@ span:hover {
     cursor: pointer;
 }
 
+#signInContainer {
+    margin-top: 100px;
+}
+
 #signOutButton {
     float: right;
 }
@@ -30,6 +34,11 @@ span:hover {
 
 #newItem {
     margin-top: 20px;
+}
+
+#clearButton {
+    margin: 10px auto;
+    clear: both;
 }
 
 #firebaseui-auth-container {
