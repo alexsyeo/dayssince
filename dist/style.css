@@ -13,7 +13,7 @@ li {
     margin-top: 8px;
 }
 
-li:hover {
+span:hover {
     color: red;
     cursor: pointer;
 }

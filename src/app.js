@@ -91,6 +91,8 @@ function renderItems() {
     for (let i = 0; i < itemsList.length; i++) {
         const item = itemsList[i];
         const itemElement = document.createElement("li");
+        const spanElement = document.createElement("span");
+        itemElement.appendChild(spanElement);
         
         var currentDate = new Date();
         const year = currentDate.getFullYear();
@@ -99,9 +101,9 @@ function renderItems() {
         currentDate = new Date(year, month, day);
 
         const daysDiff = differenceInDays(currentDate, item.date);
-        itemElement.innerHTML = item.title + ": " + daysDiff + (daysDiff == 1 ? " day" : " days");
+        spanElement.innerHTML = item.title + ": " + daysDiff + (daysDiff == 1 ? " day" : " days");
         itemElement.id = item.id;
-        itemElement.onclick = () => {
+        spanElement.onclick = () => {
             deleteItem(item.id);
             populateNewItem(item);
         }
