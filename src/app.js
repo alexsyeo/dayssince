@@ -50,15 +50,27 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Functions
+function extractYearMonthDay(date) {
+    return date.split('-').map((item) => {
+        return parseInt(item);
+    });
+}
+
 async function saveItem() {
     if (itemInputElement.value == "" || datePickerElement.value == "") {
         return;
     }
 
+    const yearMonthDay = extractYearMonthDay(datePickerElement.value);
+    const date = new Date(yearMonthDay[0], yearMonthDay[1] - 1, yearMonthDay[2]);
+
     const item = {
         title: itemInputElement.value,
-        date: new Date(datePickerElement.value),
+        date: date,
     };
+
+    console.log("datePickerElement.value: " + datePickerElement.value);
+    console.log("item.date: " + item.date);
 
     const docReference = await addDoc(collection(db, uid), item);
     item.id = docReference.id;
@@ -82,7 +94,16 @@ function renderItems() {
     for (let i = 0; i < itemsList.length; i++) {
         const item = itemsList[i];
         const itemElement = document.createElement("li");
-        const daysDiff = differenceInDays(new Date(), item.date);
+        // console.log("new Date(): " + new Date());
+        // console.log("item.date: " + item.date);
+        
+        var currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const day = currentDate.getDate();
+        currentDate = new Date(year, month, day);
+
+        const daysDiff = differenceInDays(currentDate, item.date);
         itemElement.innerHTML = item.title + ": " + daysDiff + (daysDiff == 1 ? " day" : " days");
         itemElement.id = item.id;
         itemElement.onclick = () => {
