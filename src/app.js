@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { collection, addDoc, getFirestore, getDocs, deleteDoc, doc  } from "firebase/firestore";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { differenceInDays } from "date-fns";
+import { DateTime } from "luxon";
 
 // Fields
 var uid;
@@ -38,7 +39,7 @@ function extractYearMonthDay(date) {
 }
 
 function setDatePickerToToday() {
-    datePickerElement.value = new Date().toISOString().substring(0, 10);
+    datePickerElement.value = DateTime.now().toISODate();
 }
 
 async function saveItem() {
@@ -61,6 +62,7 @@ async function saveItem() {
     renderItems();
     itemInputElement.value = "";
     setDatePickerToToday();
+    hideClearButton();
 }
 
 function deleteItem(idToDelete) {
@@ -99,7 +101,15 @@ function renderItems() {
 function populateNewItem(item) {
     itemInputElement.value = item.title;
     datePickerElement.value = item.date.toISOString().split('T')[0];
+    showClearButton();
+}
+
+function showClearButton() {
     clearButtonElement.style.display = "block";
+}
+
+function hideClearButton() {
+    clearButtonElement.style.display = "none";
 }
 
 function clearItemInput() {
@@ -113,7 +123,7 @@ function initApp() {
     clearButtonElement.addEventListener("click", function() {
         clearItemInput();
         setDatePickerToToday();
-        clearButtonElement.style.display = "none";
+        hideClearButton();
     });
     signInButtonElement.addEventListener("click", function() {
         signInWithPopup(auth, provider);
