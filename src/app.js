@@ -3,6 +3,7 @@ import { collection, addDoc, getFirestore, getDocs, deleteDoc, doc  } from "fire
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { differenceInDays } from "date-fns";
 import { DateTime } from "luxon";
+import { SimpleCrypto } from "simple-crypto-js";
 
 // Fields
 var uid;
@@ -15,6 +16,8 @@ const firebaseConfig = {
     messagingSenderId: "592625644130",
     appId: "1:592625644130:web:b83b4fdb4b1bf36ebb173b"
 };
+const secretKey = "secret-key"
+const simpleCrypto = new SimpleCrypto(secretKey)
 
 // Document elements
 const mainElement = document.getElementById("main");
@@ -51,7 +54,7 @@ async function saveItem() {
     const date = new Date(yearMonthDay[0], yearMonthDay[1] - 1, yearMonthDay[2]);
 
     const item = {
-        title: itemInputElement.value,
+        title: simpleCrypto.encrypt(itemInputElement.value),
         date: date,
     };
 
@@ -146,7 +149,7 @@ function initApp() {
             querySnapshot.forEach((itemDoc) => {
                 const itemData = itemDoc.data();
                 itemsList.push({
-                    id: itemDoc.id, title: itemData.title, date: itemData.date.toDate()
+                    id: itemDoc.id, title: simpleCrypto.decrypt(itemData.title), date: itemData.date.toDate()
                 })
             });
             sortItemsListByDate();
