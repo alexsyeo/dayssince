@@ -54,11 +54,13 @@ async function saveItem() {
     const date = new Date(yearMonthDay[0], yearMonthDay[1] - 1, yearMonthDay[2]);
 
     const item = {
-        title: simpleCrypto.encrypt(itemInputElement.value),
+        title: itemInputElement.value,
         date: date,
     };
-
-    const docReference = await addDoc(collection(db, uid), item);
+    const docReference = await addDoc(collection(db, uid), {
+        title: simpleCrypto.encrypt(item.title),
+        date: item.date,
+    });
     item.id = docReference.id;
     itemsList.push(item);
     sortItemsListByDate();
